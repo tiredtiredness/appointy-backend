@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  username   String  @unique
+  email      String  @unique
+  password   String
+  phone      String  @unique
+  firstName  String
+  lastName   String
+  middleName String?
+  avatarUrl  String?
+
+  master Master?
+  client Client?
+}
+
+model Master {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  address         String?
+  shortBio        String?
+  longBio         String?
+  careerStartYear Int
+  educationBio    String?
+  workStyleBio    String?
+  workFormats     WorkFormat[]
+  onboardingStep  MasterOnboardingStep @default(BASE)
+  city            String
+
+  skills MasterSkill[]
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Client {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  onboardingStep ClientOnboardingStep @default(BASE)
+  city           String
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  interests ClientInterest[]
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String @unique
+
+  masterSkills    MasterSkill[]
+  clientInterests ClientInterest[]
+}
+
+model MasterSkill {
+  id String @id @default(cuid())
+
+  masterId String
+  tagId    String
+
+  master Master @relation(fields: [masterId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([masterId, tagId])
+}
+
+model ClientInterest {
+  id String @id @default(cuid())
+
+  clientId String
+  tagId    String
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, tagId])
+}
+
+enum WorkFormat {
+  PLACE
+  VISIT
+}
+
+enum MasterOnboardingStep {
+  BASE
+  WORKPLACE
+  ABOUT
+  RULES
+}
+
+enum ClientOnboardingStep {
+  BASE
+  INTERESTS
+}
