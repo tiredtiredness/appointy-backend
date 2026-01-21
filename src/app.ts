@@ -1,25 +1,29 @@
-import { PrismaPg } from "@prisma/adapter-pg";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 
-import { PrismaClient } from "./generated/prisma/client";
+import { authRouter } from "./modules/auth/auth.routes";
+import { passportLib } from "./modules/auth/auth.strategy";
 import { clientRouter } from "./modules/client/client.routes";
 import { masterRouter } from "./modules/master/master.routes";
 import { tagRouter } from "./modules/tag/tag.routes";
 import { userRouter } from "./modules/user/user.routes";
-import { errorMiddleware } from "./shared/error/error.middleware";
-
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
-});
-
-export const prisma = new PrismaClient({ adapter });
+import { errorMiddleware } from "./lib/error/error.middleware";
 
 const app = express();
 
+app.use(
+  cors({
+    origin: process.env.WEB_URL || "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }),
+);
 app.use(express.json());
-app.use(cors({ credentials: true }));
-app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(passportLib.initialize());
+
+app.use("/api/v1/auth", authRouter);
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/master", masterRouter);

@@ -1,4 +1,4 @@
-import { prisma } from "@/app";
+import { prisma } from "@/configs/db";
 
 import { CreateTagDto, UpdateTagDto } from "./tag.dto";
 

@@ -33,6 +33,7 @@ export default defineConfig([
       "simple-import-sort/exports": "error",
       "unicorn/better-regex": "warn",
       "unicorn/no-process-exit": "off",
+      "unicorn/no-null": "off",
       "unicorn/no-array-reduce": "off",
       "unicorn/prevent-abbreviations": "off",
       "unicorn/prefer-single-quote": "off",
