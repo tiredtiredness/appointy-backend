@@ -4,13 +4,14 @@ import { StatusCodes } from "http-status-codes";
 import { clientInterestService } from "./client-interest.service";
 
 class ClientInterestController {
-  async addInterest(req: Request, res: Response) {
-    const clientId = req.params.id as string;
+  async add(req: Request, res: Response) {
+    const id = req.user?.id as string;
     const data = req.body;
 
-    const interest = await clientInterestService.create(clientId, data);
+    const interest = await clientInterestService.create(id, data);
+
     res.status(StatusCodes.CREATED).json(interest);
   }
 }
 
-export const clienInteresttController = new ClientInterestController();
+export const clientInterestController = new ClientInterestController();

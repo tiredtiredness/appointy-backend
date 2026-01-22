@@ -1,5 +1,4 @@
 export interface CreateClientDto {
-  userId: string;
   city: string;
 }
 

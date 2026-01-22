@@ -132,11 +132,17 @@ class AuthController {
     }
   };
 
-  getProfile = (req: Request, res: Response) => {
-    const user = req.user as User;
-    res.json({
-      user,
-    });
+  getProfile = (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user as User;
+      const { password: _password, ...userData } = user;
+
+      res.json({
+        user: userData,
+      });
+    } catch (error) {
+      next(error);
+    }
   };
 }
 

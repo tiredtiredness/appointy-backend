@@ -1,7 +1,8 @@
-import { prisma } from "@/configs/db";
+import { StatusCodes } from "http-status-codes";
 
-import { CreateTagDto } from "../tag/tag.dto";
-import { tagService } from "../tag/tag.service";
+import { prisma } from "@/configs/db";
+import { CustomError } from "@/lib/error/error.model";
+
 import { CreateClientDto, UpdateClientDto } from "./client.dto";
 
 class ClientService {
@@ -9,42 +10,70 @@ class ClientService {
     return prisma.client.findMany();
   }
 
-  async getById(id: string) {
-    const client = await prisma.client.findUnique({ where: { id } });
+  async getById(userId: string) {
+    const client = await prisma.client.findUnique({
+      where: { userId },
+      include: { interests: { include: { tag: true } } },
+    });
 
     if (!client) {
-      throw new Error("Client not found");
+      throw new CustomError({
+        message: "Client not found",
+        status: StatusCodes.NOT_FOUND,
+        path: "client.get",
+      });
     }
 
     return client;
   }
 
-  async create(data: CreateClientDto) {
-    const oldClient = await prisma.client.findFirst({
-      where: { OR: [] },
+  async create(userId: string, data: CreateClientDto) {
+    const oldClient = await prisma.client.findUnique({
+      where: { userId },
     });
 
     if (oldClient) {
-      throw new Error("Client already exists");
+      throw new CustomError({
+        message: "Client already exists",
+        status: StatusCodes.NOT_FOUND,
+        path: "client.create",
+      });
     }
 
-    const client = await prisma.client.create({ data });
+    const client = await prisma.client.create({ data: { ...data, userId } });
 
     return client;
   }
 
-  async addSkill(clientId: string, data: CreateTagDto) {
-    const tag = await tagService.findOrCreate(data);
+  async update(userId: string, data: UpdateClientDto) {
+    const existing = await prisma.client.findUnique({ where: { userId } });
 
-    return await prisma.clientInterest.create({ data: { clientId, tagId: tag.id } });
+    if (!existing) {
+      throw new CustomError({
+        message: "Client not found",
+        status: StatusCodes.NOT_FOUND,
+        path: "client.update",
+      });
+    }
+    return prisma.client.update({
+      where: { userId },
+      data,
+      include: { interests: { include: { tag: true } } },
+    });
   }
 
-  async update(id: string, data: UpdateClientDto) {
-    return prisma.client.update({ where: { id }, data });
-  }
+  async delete(userId: string) {
+    const existing = await prisma.client.findUnique({ where: { userId } });
 
-  async delete(id: string) {
-    return prisma.client.delete({ where: { id } });
+    if (!existing) {
+      throw new CustomError({
+        message: "Client not found",
+        status: StatusCodes.NOT_FOUND,
+        path: "client.delete",
+      });
+    }
+
+    return prisma.client.delete({ where: { userId } });
   }
 }
 
