@@ -109,9 +109,11 @@ enum MasterOnboardingStep {
   WORKPLACE
   ABOUT
   RULES
+  DONE
 }
 
 enum ClientOnboardingStep {
   BASE
   INTERESTS
+  DONE
 }

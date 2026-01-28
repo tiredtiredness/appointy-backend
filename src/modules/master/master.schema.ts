@@ -15,11 +15,12 @@ export const createMasterSchema = object({
   educationBio: string(),
   workStyleBio: string(),
   workFormats: workFormatsSchema,
-  onboardingStep: mixed<"BASE" | "WORKPLACE" | "ABOUT" | "RULES">().oneOf([
+  onboardingStep: mixed<"BASE" | "WORKPLACE" | "ABOUT" | "RULES" | "DONE">().oneOf([
     "BASE",
     "WORKPLACE",
     "ABOUT",
     "RULES",
+    "DONE",
   ]),
   city: string().required(),
 });
@@ -33,11 +34,12 @@ export const updateMasterSchema = notEmptyObject(
     educationBio: string(),
     workStyleBio: string(),
     workFormats: workFormatsSchema.optional(),
-    onboardingStep: mixed<"BASE" | "WORKPLACE" | "ABOUT" | "RULES">().oneOf([
+    onboardingStep: mixed<"BASE" | "WORKPLACE" | "ABOUT" | "RULES" | "DONE">().oneOf([
       "BASE",
       "WORKPLACE",
       "ABOUT",
       "RULES",
+      "DONE",
     ]),
     city: string(),
   }),

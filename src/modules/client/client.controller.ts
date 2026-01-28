@@ -28,7 +28,7 @@ class ClientController {
     const clientId = req.user?.id as string;
     const data = req.body;
 
-    const interest = await clientService.addSkill(clientId, data);
+    const interest = await clientService.create(clientId, data);
 
     res.status(StatusCodes.CREATED).json(interest);
   }

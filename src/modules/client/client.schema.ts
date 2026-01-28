@@ -9,6 +9,6 @@ export const createClientSchema = object({
 export const updateClientSchema = notEmptyObject(
   object({
     city: string(),
-    onboardingStep: mixed<"BASE" | "INTERESTS">().oneOf(["BASE", "INTERESTS"]),
+    onboardingStep: mixed<"BASE" | "INTERESTS" | "DONE">().oneOf(["BASE", "INTERESTS", "DONE"]),
   }),
 );
