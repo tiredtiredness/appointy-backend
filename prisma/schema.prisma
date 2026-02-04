@@ -50,8 +50,9 @@ model Master {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  skills   MasterSkill[]
-  services Service[]
+  skills     MasterSkill[]
+  services   Service[]
+  categories Tag[]         @relation("MasterCategories")
 }
 
 model Client {
@@ -93,12 +94,23 @@ model ClientInterest {
 }
 
 model Tag {
-  id   String @id @default(cuid())
-  name String @unique
+  id   String  @id @default(cuid())
+  name String  @unique
+  type TagType
 
   masterSkills    MasterSkill[]
   clientInterests ClientInterest[]
-  services        Service[]        @relation("ServiceCategory")
+
+  services Service[] @relation("ServiceCategory")
+  masters  Master[]  @relation("MasterCategories")
+
+  @@unique([name, type])
+}
+
+enum TagType {
+  SERVICE_CATEGORY
+  MASTER_SKILL
+  CLIENT_INTEREST
 }
 
 model Service {
@@ -118,9 +130,6 @@ model Service {
 
   master   Master @relation(fields: [masterId], references: [id], onDelete: Cascade)
   category Tag?   @relation("ServiceCategory", fields: [categoryId], references: [id], onDelete: SetNull)
-
-  @@index([masterId])
-  @@index([categoryId])
 }
 
 enum WorkFormat {
