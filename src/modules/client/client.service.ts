@@ -13,7 +13,7 @@ class ClientService {
   async getById(userId: string) {
     const client = await prisma.client.findUnique({
       where: { userId },
-      include: { interests: { include: { tag: true } } },
+      include: { interests: { include: { tag: true } }, user: true },
     });
 
     if (!client) {
@@ -58,7 +58,7 @@ class ClientService {
     return prisma.client.update({
       where: { userId },
       data,
-      include: { interests: { include: { tag: true } } },
+      include: { interests: { include: { tag: true } }, user: true },
     });
   }
 

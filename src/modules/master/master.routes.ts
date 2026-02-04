@@ -10,6 +10,7 @@ import { createMasterSchema, updateMasterSchema } from "./master.schema";
 
 export const masterRouter = Router();
 
+masterRouter.get("/categories", authenticate, masterController.getServiceCategories);
 masterRouter.get("/", authenticate, masterController.getByUserId);
 masterRouter.post("/", authenticate, validate(createMasterSchema), masterController.create);
 masterRouter.post("/skill", authenticate, validate(createTagSchema), masterSkillController.add);

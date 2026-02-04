@@ -13,7 +13,7 @@ class MasterService {
   async getByUserId(userId: string) {
     const master = await prisma.master.findUnique({
       where: { userId },
-      include: { skills: { include: { tag: true } } },
+      include: { skills: { include: { tag: true } }, user: true },
     });
 
     if (!master) {
@@ -25,6 +25,33 @@ class MasterService {
     }
 
     return master;
+  }
+
+  async getMasterCategories(userId: string) {
+    const master = await prisma.master.findUnique({
+      where: { userId },
+      include: { skills: { include: { tag: true } }, user: true },
+    });
+
+    if (!master) {
+      throw new CustomError({
+        message: "Master not found",
+        status: StatusCodes.NOT_FOUND,
+        path: "master.get",
+      });
+    }
+
+    const categories = await prisma.tag.findMany({
+      where: {
+        services: {
+          some: {
+            masterId: master.id,
+          },
+        },
+      },
+    });
+
+    return categories;
   }
 
   async create(userId: string, data: CreateMasterDto) {
@@ -61,7 +88,7 @@ class MasterService {
     return prisma.master.update({
       where: { userId },
       data,
-      include: { skills: { include: { tag: true } } },
+      include: { skills: { include: { tag: true } }, user: true },
     });
   }
 

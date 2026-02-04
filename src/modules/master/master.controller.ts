@@ -19,6 +19,14 @@ class MasterController {
     res.json(master);
   }
 
+  async getServiceCategories(req: Request, res: Response) {
+    const userId = req.user?.id as string;
+
+    const categories = await masterService.getMasterCategories(userId);
+
+    res.json(categories);
+  }
+
   async create(req: Request, res: Response) {
     const data: CreateMasterDto = req.body;
     const id = req.user?.id as string;
@@ -32,7 +40,7 @@ class MasterController {
     const masterId = req.user?.id as string;
     const data = req.body;
 
-    const skill = await masterService.addSkill(masterId, data);
+    const skill = await masterService.create(masterId, data);
 
     res.status(StatusCodes.CREATED).json(skill);
   }
