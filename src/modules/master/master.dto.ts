@@ -1,5 +1,4 @@
 export interface CreateMasterDto {
-  userId: string;
   address?: string;
   shortBio?: string;
   longBio?: string;

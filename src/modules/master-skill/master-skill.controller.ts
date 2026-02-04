@@ -5,12 +5,13 @@ import { masterService } from "./master-skill.service";
 
 class MasterSkillController {
   async add(req: Request, res: Response) {
-    const masterId = req.params.id as string;
+    const id = req.user?.id as string;
     const data = req.body;
 
-    const skill = await masterService.create(masterId, data);
+    const skill = await masterService.create(id, data);
+
     res.status(StatusCodes.CREATED).json(skill);
   }
 }
 
-export const masterController = new MasterSkillController();
+export const masterSkillController = new MasterSkillController();

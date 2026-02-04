@@ -1,17 +1,24 @@
 import { StatusCodes } from "http-status-codes";
 
-import { prisma } from "@/app";
+import { prisma } from "@/configs/db";
 
-import { CustomError } from "../../shared/error/error.model";
-import { CreateUserDto, UpdateUserDto } from "./user.dto";
+import { CustomError } from "../../lib/error/error.model";
+import { UpdateUserDto } from "./user.dto";
 
 class UserService {
   async getAll() {
-    return prisma.user.findMany();
+    return prisma.user.findMany({ omit: { password: true } });
   }
 
   async getById(id: string) {
-    const user = await prisma.user.findUnique({ where: { id } });
+    const user = await prisma.user.findUnique({
+      where: { id },
+      omit: { password: true },
+      include: {
+        master: { include: { skills: { include: { tag: true } } } },
+        client: { include: { interests: { include: { tag: true } } } },
+      },
+    });
 
     if (!user) {
       throw new CustomError({
@@ -20,24 +27,6 @@ class UserService {
         path: "user.getById",
       });
     }
-
-    return user;
-  }
-
-  async create(data: CreateUserDto) {
-    const existing = await prisma.user.findFirst({
-      where: { OR: [{ username: data.username }, { email: data.username }, { phone: data.phone }] },
-    });
-
-    if (existing) {
-      throw new CustomError({
-        message: "User already exists",
-        status: StatusCodes.CONFLICT,
-        path: "user.create",
-      });
-    }
-
-    const user = await prisma.user.create({ data });
 
     return user;
   }
@@ -63,11 +52,24 @@ class UserService {
       });
     }
 
-    return prisma.user.update({ where: { id }, data });
+    const taken = await prisma.user.findFirst({
+      where: { OR: [{ email: data.email }, { username: data.username }, { phone: data.phone }] },
+    });
+
+    if (taken && taken?.id !== id) {
+      throw new CustomError({
+        message: "User already exists",
+        status: StatusCodes.CONFLICT,
+        path: "user.update",
+      });
+    }
+
+    return prisma.user.update({ where: { id }, data, omit: { password: true } });
   }
 
   async delete(id: string) {
     const existing = await prisma.user.findUnique({ where: { id } });
+
     if (!existing) {
       throw new CustomError({
         message: "User not found",
@@ -76,7 +78,7 @@ class UserService {
       });
     }
 
-    return prisma.user.delete({ where: { id } });
+    return prisma.user.delete({ where: { id }, omit: { password: true } });
   }
 }
 

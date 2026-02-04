@@ -7,44 +7,50 @@ import { masterService } from "./master.service";
 class MasterController {
   async getAll(req: Request, res: Response) {
     const masters = await masterService.getAll();
+
     res.json(masters);
   }
 
-  async getById(req: Request, res: Response) {
-    const id = req.params.id as string;
-    const master = await masterService.getById(id);
+  async getByUserId(req: Request, res: Response) {
+    const id = req.user?.id as string;
+
+    const master = await masterService.getByUserId(id);
+
     res.json(master);
   }
 
   async create(req: Request, res: Response) {
     const data: CreateMasterDto = req.body;
-    const master = await masterService.create(data);
+    const id = req.user?.id as string;
+
+    const master = await masterService.create(id, data);
+
     res.json(master);
   }
 
   async addSkill(req: Request, res: Response) {
-    const masterId = req.params.id as string;
+    const masterId = req.user?.id as string;
     const data = req.body;
 
     const skill = await masterService.addSkill(masterId, data);
+
     res.status(StatusCodes.CREATED).json(skill);
   }
 
   async update(req: Request, res: Response) {
-    const id = req.params.id as string;
-    if (!id) {
-      res.status(404).json({ message: "Master not found" });
-      return;
-    }
-
+    const id = req.user?.id as string;
     const data: UpdateMasterDto = req.body;
+
     const master = await masterService.update(id, data);
+
     res.json(master);
   }
 
   async delete(req: Request, res: Response) {
-    const id = req.params.id as string;
+    const id = req.user?.id as string;
+
     const master = await masterService.delete(id);
+
     res.json(master);
   }
 }

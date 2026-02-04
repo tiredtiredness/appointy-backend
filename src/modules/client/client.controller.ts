@@ -11,40 +11,42 @@ class ClientController {
   }
 
   async getById(req: Request, res: Response) {
-    const id = req.params.id as string;
+    const id = req.user?.id as string;
     const client = await clientService.getById(id);
     res.json(client);
   }
 
   async create(req: Request, res: Response) {
+    const id = req.user?.id as string;
     const data: CreateClientDto = req.body;
-    const client = await clientService.create(data);
+
+    const client = await clientService.create(id, data);
     res.json(client);
   }
 
   async addInterest(req: Request, res: Response) {
-    const clientId = req.params.id as string;
+    const clientId = req.user?.id as string;
     const data = req.body;
 
-    const interest = await clientService.addSkill(clientId, data);
+    const interest = await clientService.create(clientId, data);
+
     res.status(StatusCodes.CREATED).json(interest);
   }
 
   async update(req: Request, res: Response) {
-    const id = req.params.id as string;
-    if (!id) {
-      res.status(404).json({ message: "Client not found" });
-      return;
-    }
-
+    const id = req.user?.id as string;
     const data: UpdateClientDto = req.body;
+
     const client = await clientService.update(id, data);
+
     res.json(client);
   }
 
   async delete(req: Request, res: Response) {
-    const id = req.params.id as string;
+    const id = req.user?.id as string;
+
     const client = await clientService.delete(id);
+
     res.json(client);
   }
 }

@@ -10,7 +10,7 @@ class TagController {
   }
 
   async getById(req: Request, res: Response) {
-    const id = req.params.id;
+    const id = req.params.id as string;
     const tag = await tagService.getById(id);
     res.json(tag);
   }
@@ -22,7 +22,8 @@ class TagController {
   }
 
   async update(req: Request, res: Response) {
-    const id = req.params.id;
+    const id = req.params.id as string;
+
     if (!id) {
       res.status(404).json({ message: "Tag not found" });
       return;
@@ -34,7 +35,7 @@ class TagController {
   }
 
   async delete(req: Request, res: Response) {
-    const id = req.params.id;
+    const id = req.params.id as string;
     const tag = await tagService.delete(id);
     res.json(tag);
   }

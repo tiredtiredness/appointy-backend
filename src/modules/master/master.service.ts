@@ -1,7 +1,8 @@
-import { prisma } from "@/app";
+import { StatusCodes } from "http-status-codes";
 
-import { CreateTagDto } from "../tag/tag.dto";
-import { tagService } from "../tag/tag.service";
+import { prisma } from "@/configs/db";
+import { CustomError } from "@/lib/error/error.model";
+
 import { CreateMasterDto, UpdateMasterDto } from "./master.dto";
 
 class MasterService {
@@ -9,44 +10,73 @@ class MasterService {
     return prisma.master.findMany();
   }
 
-  async getById(id: string) {
-    const master = await prisma.master.findUnique({ where: { id } });
+  async getByUserId(userId: string) {
+    const master = await prisma.master.findUnique({
+      where: { userId },
+      include: { skills: { include: { tag: true } } },
+    });
 
     if (!master) {
-      throw new Error("Master not found");
+      throw new CustomError({
+        message: "Master not found",
+        status: StatusCodes.NOT_FOUND,
+        path: "master.get",
+      });
     }
 
     return master;
   }
 
-  async create(data: CreateMasterDto) {
-    const oldMaster = await prisma.master.findFirst({
+  async create(userId: string, data: CreateMasterDto) {
+    const oldMaster = await prisma.master.findUnique({
       where: {
-        OR: [],
+        userId,
       },
     });
 
     if (oldMaster) {
-      throw new Error("Master already exists");
+      throw new CustomError({
+        message: "Master already exists",
+        status: StatusCodes.CONFLICT,
+        path: "master.create",
+      });
     }
 
-    const master = await prisma.master.create({ data });
+    const master = await prisma.master.create({ data: { ...data, userId } });
 
     return master;
   }
 
-  async addSkill(masterId: string, data: CreateTagDto) {
-    const tag = await tagService.findOrCreate(data);
+  async update(userId: string, data: UpdateMasterDto) {
+    const existing = await prisma.master.findUnique({ where: { userId } });
 
-    return await prisma.masterSkill.create({ data: { masterId, tagId: tag.id } });
+    if (!existing) {
+      throw new CustomError({
+        message: "Master not found",
+        status: StatusCodes.NOT_FOUND,
+        path: "master.update",
+      });
+    }
+
+    return prisma.master.update({
+      where: { userId },
+      data,
+      include: { skills: { include: { tag: true } } },
+    });
   }
 
-  async update(id: string, data: UpdateMasterDto) {
-    return prisma.master.update({ where: { id }, data });
-  }
+  async delete(userId: string) {
+    const existing = await prisma.master.findUnique({ where: { userId } });
 
-  async delete(id: string) {
-    return prisma.master.delete({ where: { id } });
+    if (!existing) {
+      throw new CustomError({
+        message: "Master not found",
+        status: StatusCodes.NOT_FOUND,
+        path: "master.delete",
+      });
+    }
+
+    return prisma.master.delete({ where: { userId } });
   }
 }
 

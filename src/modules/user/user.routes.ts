@@ -1,11 +1,13 @@
 import { Router } from "express";
 
+import { authenticate } from "@/utils/authenticate";
+import { validate } from "@/utils/validate";
+
 import { userController } from "./user.controller";
+import { updateUserSchema } from "./user.schema";
 
 export const userRouter = Router();
 
-userRouter.get("/", userController.getAll);
-userRouter.get("/:id", userController.getById);
-userRouter.post("/", userController.create);
-userRouter.put("/:id", userController.update);
-userRouter.delete("/:id", userController.delete);
+userRouter.get("/", authenticate, userController.getById);
+userRouter.put("/", authenticate, validate(updateUserSchema), userController.update);
+userRouter.delete("/", authenticate, userController.delete);

@@ -1,15 +1,14 @@
 import { mixed, object, string } from "yup";
 
+import { notEmptyObject } from "@/utils/yup-helpers";
+
 export const createClientSchema = object({
-  body: object({
-    userId: string(),
-    city: string().required(),
-  }),
+  city: string().required(),
 });
 
-export const updateClientSchema = object({
-  body: object({
+export const updateClientSchema = notEmptyObject(
+  object({
     city: string(),
-    onboardingStep: mixed<"BASE" | "INTERESTS">().oneOf(["BASE", "INTERESTS"]),
+    onboardingStep: mixed<"BASE" | "INTERESTS" | "DONE">().oneOf(["BASE", "INTERESTS", "DONE"]),
   }),
-});
+);

@@ -18,14 +18,15 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  username   String  @unique
-  email      String  @unique
-  password   String
-  phone      String  @unique
-  firstName  String
-  lastName   String
-  middleName String?
-  avatarUrl  String?
+  username     String  @unique
+  password     String
+  email        String? @unique
+  tokenVersion Int     @default(0)
+  phone        String? @unique
+  firstName    String?
+  lastName     String?
+  middleName   String?
+  avatarUrl    String?
 
   master Master?
   client Client?
@@ -108,9 +109,11 @@ enum MasterOnboardingStep {
   WORKPLACE
   ABOUT
   RULES
+  DONE
 }
 
 enum ClientOnboardingStep {
   BASE
   INTERESTS
+  DONE
 }
