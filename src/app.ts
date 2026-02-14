@@ -7,6 +7,7 @@ import { authRouter } from "./modules/auth/auth.routes";
 import { passportLib } from "./modules/auth/auth.strategy";
 import { clientRouter } from "./modules/client/client.routes";
 import { masterRouter } from "./modules/master/master.routes";
+import { scheduleRouter } from "./modules/schedule/schedule.routes";
 import { serviceRouter } from "./modules/service/service.routes";
 import { tagRouter } from "./modules/tag/tag.routes";
 import { userRouter } from "./modules/user/user.routes";
@@ -31,6 +32,7 @@ app.use("/api/v1/master", masterRouter);
 app.use("/api/v1/client", clientRouter);
 app.use("/api/v1/tag", tagRouter);
 app.use("/api/v1/service", serviceRouter);
+app.use("/api/v1/schedule", scheduleRouter);
 
 app.all(/(.*)/, (_, res) => {
   res.status(404).json({ message: "Not Found" });

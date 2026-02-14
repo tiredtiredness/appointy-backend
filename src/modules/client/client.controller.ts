@@ -21,7 +21,7 @@ class ClientController {
     const data: CreateClientDto = req.body;
 
     const client = await clientService.create(id, data);
-    res.json(client);
+    res.status(StatusCodes.CREATED).json(client);
   }
 
   async addInterest(req: Request, res: Response) {

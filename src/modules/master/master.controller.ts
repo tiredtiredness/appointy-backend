@@ -33,7 +33,7 @@ class MasterController {
 
     const master = await masterService.create(id, data);
 
-    res.json(master);
+    res.status(StatusCodes.CREATED).json(master);
   }
 
   async addSkill(req: Request, res: Response) {

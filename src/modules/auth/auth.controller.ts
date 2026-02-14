@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 
 import { User } from "@/generated/prisma/client";
 
@@ -40,7 +41,7 @@ class AuthController {
 
       this.setTokenCookies(res, accessToken, refreshToken);
 
-      res.status(201).json({
+      res.status(StatusCodes.CREATED).json({
         message: "Registered",
         user,
       });

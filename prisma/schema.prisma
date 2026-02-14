@@ -53,6 +53,7 @@ model Master {
   skills     MasterSkill[]
   services   Service[]
   categories Tag[]         @relation("MasterCategories")
+  schedules  Schedule[]
 }
 
 model Client {
@@ -100,17 +101,10 @@ model Tag {
 
   masterSkills    MasterSkill[]
   clientInterests ClientInterest[]
-
-  services Service[] @relation("ServiceCategory")
-  masters  Master[]  @relation("MasterCategories")
+  services        Service[]        @relation("ServiceCategory")
+  masters         Master[]         @relation("MasterCategories")
 
   @@unique([name, type])
-}
-
-enum TagType {
-  SERVICE_CATEGORY
-  MASTER_SKILL
-  CLIENT_INTEREST
 }
 
 model Service {
@@ -130,6 +124,37 @@ model Service {
 
   master   Master @relation(fields: [masterId], references: [id], onDelete: Cascade)
   category Tag?   @relation("ServiceCategory", fields: [categoryId], references: [id], onDelete: SetNull)
+}
+
+model Schedule {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  startTime DateTime @unique
+  endTime   DateTime @unique
+
+  masterId String
+  master   Master @relation(fields: [masterId], references: [id], onDelete: Cascade)
+
+  breaks Break[]
+}
+
+model Break {
+  id String @id @default(cuid())
+
+  startTime DateTime
+  endTime   DateTime
+
+  scheduleId String
+
+  schedule Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+}
+
+enum TagType {
+  SERVICE_CATEGORY
+  MASTER_SKILL
+  CLIENT_INTEREST
 }
 
 enum WorkFormat {
