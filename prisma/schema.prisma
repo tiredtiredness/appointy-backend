@@ -47,10 +47,12 @@ model Master {
   onboardingStep  MasterOnboardingStep @default(BASE)
   city            String
 
-  skills MasterSkill[]
-
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  skills     MasterSkill[]
+  services   Service[]
+  categories Tag[]         @relation("MasterCategories")
 }
 
 model Client {
@@ -65,14 +67,6 @@ model Client {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   interests ClientInterest[]
-}
-
-model Tag {
-  id   String @id @default(cuid())
-  name String @unique
-
-  masterSkills    MasterSkill[]
-  clientInterests ClientInterest[]
 }
 
 model MasterSkill {
@@ -97,6 +91,45 @@ model ClientInterest {
   tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@unique([clientId, tagId])
+}
+
+model Tag {
+  id   String  @id @default(cuid())
+  name String  @unique
+  type TagType
+
+  masterSkills    MasterSkill[]
+  clientInterests ClientInterest[]
+
+  services Service[] @relation("ServiceCategory")
+  masters  Master[]  @relation("MasterCategories")
+
+  @@unique([name, type])
+}
+
+enum TagType {
+  SERVICE_CATEGORY
+  MASTER_SKILL
+  CLIENT_INTEREST
+}
+
+model Service {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?
+  duration    Int
+  price       Decimal @db.Decimal(10, 2)
+  isActive    Boolean @default(false)
+  imageUrl    String?
+
+  masterId   String
+  categoryId String?
+
+  master   Master @relation(fields: [masterId], references: [id], onDelete: Cascade)
+  category Tag?   @relation("ServiceCategory", fields: [categoryId], references: [id], onDelete: SetNull)
 }
 
 enum WorkFormat {

@@ -19,8 +19,8 @@ class TagService {
 
   async findOrCreate(data: CreateTagDto) {
     const tag = await prisma.tag.upsert({
-      where: { name: data.name },
-      create: { name: data.name },
+      where: { name: data.name, type: data.type },
+      create: data,
       update: {},
     });
 

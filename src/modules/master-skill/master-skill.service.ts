@@ -24,4 +24,4 @@ class MasterSkillService {
   }
 }
 
-export const masterService = new MasterSkillService();
+export const masterSkillService = new MasterSkillService();

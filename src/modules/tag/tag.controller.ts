@@ -17,7 +17,9 @@ class TagController {
 
   async create(req: Request, res: Response) {
     const data: CreateTagDto = req.body;
+
     const Tag = await tagService.findOrCreate(data);
+
     res.json(Tag);
   }
 
