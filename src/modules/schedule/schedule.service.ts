@@ -23,6 +23,7 @@ class ScheduleService {
         id,
         masterId: master.id,
       },
+      include: { breaks: true },
     });
 
     if (!schedule) {
@@ -66,6 +67,7 @@ class ScheduleService {
           lt: end,
         },
       },
+      include: { breaks: true },
     });
   }
 
@@ -127,10 +129,10 @@ class ScheduleService {
 
     const { startTime, endTime } = data;
 
-    const finalStart = startTime ?? existing.startTime;
-    const finalEnd = endTime ?? existing.endTime;
+    const start = startTime ?? existing.startTime;
+    const end = endTime ?? existing.endTime;
 
-    if (isBefore(finalEnd, finalStart)) {
+    if (isBefore(end, start)) {
       throw new CustomError({
         message: "End can't be before start",
         status: StatusCodes.CONFLICT,
@@ -141,6 +143,7 @@ class ScheduleService {
     return await prisma.schedule.update({
       where: { id },
       data,
+      include: { breaks: true },
     });
   }
 

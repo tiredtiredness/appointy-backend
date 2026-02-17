@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 
 import { CreateServiceDto, UpdateServiceDto } from "./service.dto";
 import { serviceService } from "./service.service";
-import { StatusCodes } from "http-status-codes";
 
 class ServiceController {
   async getAll(req: Request, res: Response) {
