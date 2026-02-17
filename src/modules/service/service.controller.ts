@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 
 import { CreateServiceDto, UpdateServiceDto } from "./service.dto";
 import { serviceService } from "./service.service";
@@ -26,7 +27,7 @@ class ServiceController {
 
     const service = await serviceService.create(userId, data);
 
-    res.json(service);
+    res.status(StatusCodes.CREATED).json(service);
   }
 
   async update(req: Request, res: Response) {
